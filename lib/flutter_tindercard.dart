@@ -94,6 +94,7 @@ class _TinderSwapCardState extends State<TinderSwapCard>
   AnimationController _animationController;
   int _currentFront;
   static int _trigger; // 0: no trigger; -1: trigger left; 1: trigger right
+  int _totalNumOriginal = 0;
 
   Widget _buildCard(BuildContext context, int realIndex) {
     if (realIndex < 0) {
@@ -203,6 +204,7 @@ class _TinderSwapCardState extends State<TinderSwapCard>
   void initState() {
     super.initState();
     _currentFront = widget._totalNum - widget._stackNum;
+    _totalNumOriginal = widget._totalNum;
 
     frontCardAlign = _cardAligns[_cardAligns.length - 1];
     _animationController = new AnimationController(
@@ -236,6 +238,12 @@ class _TinderSwapCardState extends State<TinderSwapCard>
   @override
   Widget build(BuildContext context) {
     widget.cardController?.addListener((trigger) => triggerSwap(trigger));
+
+    // Compensate current front to the total num change if needed.
+    if (_currentFront != widget._totalNum) {
+      _currentFront += (widget._totalNum - _totalNumOriginal);
+      _totalNumOriginal = widget._totalNum;
+    }
 
     return Stack(children: _buildCards(context));
   }
